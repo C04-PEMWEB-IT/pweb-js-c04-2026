@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Produk - Mini Shopee</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="catalog.css">
+</head>
+
+<body class="catalog-page">
+
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">Sopi</span>
+        </div>
+        <div class="navbar-user">
+            <span id="welcomeMessage">Selamat datang, <strong id="userName">...</strong>!</span>
+
+            <!-- buka/tutup panel keranjang: Bagian 2 -->
+            <div class="cart-icon-wrapper" id="cartIconWrapper">
+                <span>Keranjang</span>
+                <span class="cart-badge" id="cartBadge">0</span>
+            </div>
+
+            <button type="button" id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Toolbar -->
+    <!-- logic search/filter/sort: Bagian 2 -->
+    <section class="toolbar">
+        <input type="text" id="searchInput" placeholder="Cari produk berdasarkan nama atau kategori...">
+
+        <select id="categoryFilter">
+            <option value="all">Semua Kategori</option>
+            <!-- <option> lain akan ditambahkan otomatis oleh JS (Bagian 1) dari data API -->
+        </select>
+
+        <select id="sortSelect">
+            <option value="default">Urutkan</option>
+            <option value="price-asc">Harga Termurah</option>
+            <option value="price-desc">Harga Termahal</option>
+            <option value="rating-desc">Rating Tertinggi</option>
+        </select>
+    </section>
+
+    <!-- Load more dan error -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Memuat produk...</p>
+    </div>
+
+    <div id="globalError" class="global-error hidden"></div>
+
+    <!-- Product grid -->
+    <main>
+        <div id="productGrid" class="product-grid"></div>
+
+        <p id="noResultsMessage" class="no-results hidden">Produk tidak ditemukan.</p>
+
+        <div class="load-more-wrapper">
+            <button type="button" id="loadMoreBtn" class="btn-load-more hidden">Muat Lebih Banyak</button>
+        </div>
+    </main>
+
+    <!-- ===================== MODAL DETAIL PRODUK ===================== -->
+    <!-- isi #modalBody & logic buka/tutup (event delegation): Bagian 2 -->
+    <div id="productModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button type="button" id="modalCloseBtn" class="modal-close">&times;</button>
+            <div id="modalBody">
+                <!-- diisi Bagian 2 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Keranjang belanja -->
+    <!-- isi keranjang & CRUD: Bagian 2 -->
+    <div id="cartBackdrop" class="cart-backdrop hidden"></div>
+    <div id="cartPanel" class="cart-panel hidden">
+        <div class="cart-panel-header">
+            <h3>Keranjang Belanja</h3>
+            <button type="button" id="cartCloseBtn" class="modal-close" style="position: static;">&times;</button>
+        </div>
+        <div id="cartItemsList" class="cart-items-list">
+            <!-- diisi Bagian 2 -->
+        </div>
+        <div class="cart-panel-footer">
+            <p>Total: <strong id="cartTotal">$0</strong></p>
+        </div>
+    </div>
+
+    <script src="catalog.js" defer></script>
+</body>
+
+</html>

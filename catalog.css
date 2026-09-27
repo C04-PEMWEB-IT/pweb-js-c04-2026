@@ -100,6 +100,7 @@ body.catalog-page {
     -webkit-appearance: none;
     -moz-appearance: none;
     padding-right: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     background-size: 12px;
@@ -151,7 +152,7 @@ body.catalog-page {
     width: 100%;
     height: 160px;
     object-fit: cover;
-    background: #f4f6f9;
+    background: #ffffff;
     display: block;
 }
 
@@ -298,7 +299,7 @@ body.catalog-page {
 
 .no-results {
     text-align: center;
-    color: #888;
+    color: #323232;
     padding: 40px 0;
     grid-column: 1 / -1;
 }
@@ -338,7 +339,7 @@ body.catalog-page {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #888;
+    color: #4e4e4e;
     line-height: 1;
 }
 

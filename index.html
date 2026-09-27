@@ -18,8 +18,6 @@
         </div>
         <div class="navbar-user">
             <span id="welcomeMessage">Selamat datang, <strong id="userName">...</strong>!</span>
-
-            <!-- buka/tutup panel keranjang: Bagian 2 -->
             <div class="cart-icon-wrapper" id="cartIconWrapper">
                 <span>Keranjang</span>
                 <span class="cart-badge" id="cartBadge">0</span>
@@ -30,13 +28,11 @@
     </nav>
 
     <!-- Toolbar -->
-    <!-- logic search/filter/sort: Bagian 2 -->
     <section class="toolbar">
         <input type="text" id="searchInput" placeholder="Cari produk berdasarkan nama atau kategori...">
 
         <select id="categoryFilter">
             <option value="all">Semua Kategori</option>
-            <!-- <option> lain akan ditambahkan otomatis oleh JS (Bagian 1) dari data API -->
         </select>
 
         <select id="sortSelect">
@@ -66,19 +62,15 @@
         </div>
     </main>
 
-    <!-- ===================== MODAL DETAIL PRODUK ===================== -->
-    <!-- isi #modalBody & logic buka/tutup (event delegation): Bagian 2 -->
+    <!-- Product Details Modal -->
     <div id="productModal" class="modal-overlay hidden">
         <div class="modal-content">
             <button type="button" id="modalCloseBtn" class="modal-close">&times;</button>
             <div id="modalBody">
-                <!-- diisi Bagian 2 -->
             </div>
         </div>
     </div>
 
-    <!-- Keranjang belanja -->
-    <!-- isi keranjang & CRUD: Bagian 2 -->
     <div id="cartBackdrop" class="cart-backdrop hidden"></div>
     <div id="cartPanel" class="cart-panel hidden">
         <div class="cart-panel-header">
@@ -86,7 +78,6 @@
             <button type="button" id="cartCloseBtn" class="modal-close" style="position: static;">&times;</button>
         </div>
         <div id="cartItemsList" class="cart-items-list">
-            <!-- diisi Bagian 2 -->
         </div>
         <div class="cart-panel-footer">
             <p>Total: <strong id="cartTotal">$0</strong></p>

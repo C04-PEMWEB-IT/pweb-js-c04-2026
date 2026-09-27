@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. Load More (pagination)
     setupLoadMore();
 
-    // 5. Bagian 2 dipanggil di sini juga, supaya semua inisialisasi terkumpul di satu tempat
+    // 5. Search, filter, sort, event delegation, modal
     setupSearch();
     setupFilterAndSort();
     setupCartEvents();
@@ -55,6 +55,7 @@ function setupLogout() {
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.removeItem("userFirstName");
         localStorage.removeItem("userUsername");
+        localStorage.removeItem("cart");
         window.location.href = "login.html";
     });
 }
@@ -184,14 +185,7 @@ function hideGlobalError() {
     globalError.classList.add("hidden");
 }
 
-/* =========================================================================
-   6. CART BADGE (helper kecil untuk Navbar — dipakai juga oleh Bagian 2)
-   -------------------------------------------------------------------------
-   Asumsi bentuk data di localStorage('cart'): array of
-   { id, title, price, thumbnail, qty }
-   Bagian 2 bebas menyesuaikan, yang penting panggil updateCartBadge()
-   lagi setiap kali isi cart berubah (tambah/kurang/hapus item).
-   ========================================================================= */
+/* Cart badge */
 function updateCartBadge() {
     let cart = [];
     try {
@@ -203,70 +197,7 @@ function updateCartBadge() {
     document.getElementById("cartBadge").textContent = totalQty;
 }
 
-/* =========================================================================
-   =========================================================================
-   BAGIAN 2 — Dikerjakan oleh: [ISI NAMA TEMAN]
 
-   Fitur yang perlu diisi di sini:
-   - Pencarian Real-Time (Debounce & Closure)
-   - Filter kategori & Sorting harga/rating (Functional Programming)
-   - Keranjang Belanja (Local Storage CRUD)
-   - Modal Detail Produk (Event Delegation)
-
-   ---- KONTRAK: hal-hal yang SUDAH disiapkan Bagian 1 untuk kamu pakai ----
-   Variabel:
-     - allProducts        : semua produk asli dari API (jangan diubah)
-     - displayedProducts  : produk yang lagi ditampilkan setelah difilter
-     - currentlyShown     : jumlah produk yang sudah tampil di layar
-
-   Fungsi:
-     - resetAndRender()   : panggil ini SETELAH kamu mengubah
-                             `displayedProducts`, biar grid dirender ulang
-                             dari awal (pagination-nya ikut ke-reset juga)
-     - updateCartBadge()  : panggil ini setiap kali isi cart berubah
-
-   Elemen HTML yang sudah ada & siap dipasangi listener:
-     - #searchInput            (input pencarian)
-     - #categoryFilter         (<select>, sudah terisi kategori dari API)
-     - #sortSelect             (<select>, opsi: price-asc/price-desc/rating-desc)
-     - #productGrid            (parent untuk Event Delegation klik kartu/tombol cart)
-       -> tiap kartu: .product-card[data-id]
-       -> tiap tombol tambah: .btn-add-cart[data-id]
-     - #cartIconWrapper        (klik untuk buka panel keranjang)
-     - #cartBackdrop, #cartPanel, #cartItemsList, #cartTotal, #cartCloseBtn
-     - #productModal, #modalBody, #modalCloseBtn
-
-   Contoh pola filter + search + sort digabung (silakan dikembangkan):
-
-     function applyFiltersAndSearch() {
-         const keyword = searchInput.value.trim().toLowerCase();
-         const kategori = categoryFilter.value;
-         const urutan = sortSelect.value;
-
-         let hasil = allProducts.filter(p =>
-             p.title.toLowerCase().includes(keyword) ||
-             p.category.toLowerCase().includes(keyword)
-         );
-
-         if (kategori !== 'all') {
-             hasil = hasil.filter(p => p.category === kategori);
-         }
-
-         if (urutan === 'price-asc') hasil = [...hasil].sort((a, b) => a.price - b.price);
-         if (urutan === 'price-desc') hasil = [...hasil].sort((a, b) => b.price - a.price);
-         if (urutan === 'rating-desc') hasil = [...hasil].sort((a, b) => b.rating - a.rating);
-
-         displayedProducts = hasil;
-         resetAndRender();
-     }
-   ========================================================================= */
-
-// >>> TAMBAHAN ANGGOTA 3 (mulai dari sini sampai akhir file) >>>
-/* =========================================================================
-   BAGIAN 3 — Dikerjakan oleh: Anggota 3
-   Fitur: Pencarian (Debounce & Closure), Filter & Sort, Keranjang (CRUD),
-   Modal Detail Produk (Event Delegation)
-   ========================================================================= */
 
 const searchInput = document.getElementById("searchInput");
 const categoryFilter = document.getElementById("categoryFilter");
@@ -283,16 +214,16 @@ const productModal = document.getElementById("productModal");
 const modalBody = document.getElementById("modalBody");
 const modalCloseBtn = document.getElementById("modalCloseBtn");
 
-/* ---------- Debounce (memanfaatkan Closure) ---------- */
+/* Debounce */
 function debounce(fn, delay = 400) {
-    let timeoutId; // disimpan lewat closure, bertahan antar pemanggilan
+    let timeoutId;
     return function (...args) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => fn.apply(this, args), delay);
     };
 }
 
-/* ---------- Search + Filter + Sort (Functional Programming) ---------- */
+/* Search, sort, filter */
 function applyFiltersAndSearch() {
     const keyword = searchInput.value.trim().toLowerCase();
     const kategori = categoryFilter.value;
@@ -317,7 +248,6 @@ function applyFiltersAndSearch() {
 const debouncedFilter = debounce(applyFiltersAndSearch, 400);
 
 function setupSearch() {
-    // Debounce: baru memicu filter setelah user berhenti mengetik 400ms
     searchInput.addEventListener("input", debouncedFilter);
 }
 
@@ -326,7 +256,7 @@ function setupFilterAndSort() {
     sortSelect.addEventListener("change", applyFiltersAndSearch);
 }
 
-/* ---------- Keranjang Belanja (Local Storage CRUD) ---------- */
+/* Keranjang */
 function getCart() {
     try {
         return JSON.parse(localStorage.getItem("cart")) || [];
@@ -370,7 +300,7 @@ function updateCartItemQty(productId, delta) {
 
     item.qty += delta;
     if (item.qty <= 0) {
-        cart = cart.filter(i => i.id !== productId); // Delete otomatis kalau qty habis
+        cart = cart.filter(i => i.id !== productId);
     }
     saveCart(cart);
 }
@@ -384,7 +314,7 @@ function renderCartPanel() {
     const cart = getCart();
 
     if (cart.length === 0) {
-        cartItemsList.innerHTML = '<p style="text-align:center;color:#888;padding:20px 0;">Keranjang masih kosong.</p>';
+        cartItemsList.innerHTML = '<p style="text-align:center;color:#333;padding:20px 0;">Keranjang masih kosong</p>';
         cartTotal.textContent = "$0";
         return;
     }
@@ -424,8 +354,6 @@ function closeCartPanel() {
 }
 
 function setupCartEvents() {
-    // Event Delegation: satu listener di parent #productGrid,
-    // menangkap klik tombol .btn-add-cart di kartu manapun.
     productGrid.addEventListener("click", e => {
         const addBtn = e.target.closest(".btn-add-cart");
         if (!addBtn) return;
@@ -439,7 +367,6 @@ function setupCartEvents() {
     cartCloseBtn.addEventListener("click", closeCartPanel);
     cartBackdrop.addEventListener("click", closeCartPanel);
 
-    // Event Delegation juga untuk tombol +/- dan hapus di dalam panel keranjang
     cartItemsList.addEventListener("click", e => {
         const incBtn = e.target.closest(".btn-cart-increase");
         const decBtn = e.target.closest(".btn-cart-decrease");
@@ -453,10 +380,10 @@ function setupCartEvents() {
     renderCartPanel();
 }
 
-/* ---------- Modal Detail Produk (Event Delegation) ---------- */
+/* Product Details dan Modal */
 function renderModalContent(product) {
     modalBody.innerHTML = `
-        <img src="${product.thumbnail}" alt="${escapeHTML(product.title)}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:14px;">
+        <img src="${product.thumbnail}" alt="${escapeHTML(product.title)}" style="width:100%;height:220px;object-fit:contain;background:#f4f6f9;border-radius:8px;margin-bottom:14px;">
         <span class="product-category-tag">${escapeHTML(product.category)}</span>
         <h2 style="margin:10px 0 6px;">${escapeHTML(product.title)}</h2>
         <p style="font-weight:700;font-size:18px;margin-bottom:8px;">$${product.price}</p>
@@ -477,9 +404,8 @@ function closeModal() {
 }
 
 function setupModalEvents() {
-    // Event Delegation: klik kartu (selain tombol tambah) buka modal detail
     productGrid.addEventListener("click", e => {
-        if (e.target.closest(".btn-add-cart")) return; // biar tidak dobel sama setupCartEvents
+        if (e.target.closest(".btn-add-cart")) return;
 
         const card = e.target.closest(".product-card");
         if (!card) return;
@@ -493,7 +419,6 @@ function setupModalEvents() {
 
     modalCloseBtn.addEventListener("click", closeModal);
 
-    // Tombol "+ Tambah ke Keranjang" di dalam modal juga didelegasikan
     modalBody.addEventListener("click", e => {
         const addBtn = e.target.closest(".btn-add-cart");
         if (!addBtn) return;
